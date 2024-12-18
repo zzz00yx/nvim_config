@@ -98,15 +98,22 @@ cmp.setup {
   },
 }
 
+local hover_fn = function(opts)
+  local float_bufnr, _ = vim.diagnostic.open_float()
+  if float_bufnr == nil then
+    vim.lsp.buf.hover(opts)
+  end
+end
 local on_attach = function(_, bufnr)
   local opts = { buffer = bufnr, noremap = true, silent = true }
   vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-  vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+  vim.keymap.set("n", "K", hover_fn, opts)
   vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
   vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
   vim.keymap.set("n", "<A-d>", function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, opts)
   vim.keymap.set("n", "<space>f", vim.lsp.buf.format, opts)
+  vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
   vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
 end
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
