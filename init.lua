@@ -52,6 +52,16 @@ require("lazy").setup({
         "hrsh7th/cmp-path",
       },
     },
+    {
+      "nvim-neo-tree/neo-tree.nvim",
+      event = "VeryLazy",
+      branch = "v3.x",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-tree/nvim-web-devicons",
+        "MunifTanjim/nui.nvim",
+      },
+    },
     { "nvim-telescope/telescope.nvim", tag = "0.1.8",
       dependencies = { "nvim-lua/plenary.nvim" }
     },
@@ -79,6 +89,36 @@ require("telescope").setup {
 }
 vim.keymap.set("n", "<C-p>", require("telescope.builtin").find_files)
 vim.keymap.set("n", "<C-l>", require("telescope.builtin").live_grep)
+
+require("neo-tree").setup {
+  close_if_last_window = true,
+  filesystem = { use_libuv_file_watcher = true, },
+  window = {
+    mappings = {
+      ["c"] = "none",
+      ["x"] = "none",
+      ["y"] = {
+        function(state)
+          local node = state.tree:get_node()
+          local filename = node.name
+          vim.fn.setreg('"', filename)
+          vim.notify("Copied: " .. filename)
+        end,
+        desc = "copy relative path",
+      },
+      ["Y"] = {
+        function(state)
+          local node = state.tree:get_node()
+          local filepath = node:get_id()
+          vim.fn.setreg('"', filepath)
+          vim.notify("Copied: " .. filepath)
+        end,
+        desc = "copy absolute path",
+      },
+    },
+  },
+}
+vim.keymap.set("n", "<F2>", ":Neotree toggle<CR>")
 
 local hop = require("hop")
 local directions = require("hop.hint").HintDirection
@@ -108,8 +148,9 @@ local on_attach = function(_, bufnr)
   local opts = { buffer = bufnr, noremap = true, silent = true }
   vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-  vim.keymap.set("n", "K", hover_fn, opts)
   vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+  vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+  vim.keymap.set("n", "K", hover_fn, opts)
   vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
   vim.keymap.set("n", "<A-d>", function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, opts)
   vim.keymap.set("n", "<space>f", vim.lsp.buf.format, opts)
@@ -134,7 +175,6 @@ require("lspconfig").clangd.setup {
 
 -- Better to put nvim-treesitter beneath the lsp configs, or it may block autostarting of lsp
 require("nvim-treesitter.configs").setup {
-  ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "query" },
+  ensure_installed = { "c", "cpp", "python", "cmake", "make", "bash", "lua", "verilog", "vim", "vimdoc", "query" },
   highlight = { enable = true }
 }
-
