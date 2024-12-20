@@ -158,11 +158,30 @@ local on_attach = function(_, bufnr)
   vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
 end
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
-require("lspconfig").pyright.setup {
+
+require("lspconfig").pylsp.setup {
   capabilities = capabilities,
   on_attach = on_attach,
   filetypes = { "python" },
+  settings = {
+    pylsp = {
+      plugins = {
+        pycodestyle = { enabled = false },
+        ruff = {
+            enabled = true,
+            unsafeFixes = true,
+            severities = { ["F"] = "W" }, -- All Flake8 rules hint in Warning Level
+        },
+      },
+    },
+  },
 }
+-- require("lspconfig").ruff.setup {
+--   capabilities = capabilities,
+--   on_attach = on_attach,
+--   filetypes = { "python" },
+-- }
+
 require("lspconfig").clangd.setup {
   capabilities = capabilities,
   on_attach = function(_, bufnr)
