@@ -168,9 +168,9 @@ require("lspconfig").pylsp.setup {
       plugins = {
         pycodestyle = { enabled = false },
         ruff = {
-            enabled = true,
-            unsafeFixes = true,
-            severities = { ["F"] = "W" }, -- All Flake8 rules hint in Warning Level
+          enabled = true,
+          unsafeFixes = true,
+          severities = { ["F"] = "W" }, -- All Flake8 rules hint in Warning Level
         },
       },
     },
@@ -192,8 +192,12 @@ require("lspconfig").clangd.setup {
   filetypes = { "c", "cpp" },
 }
 
+require("lspconfig").ocamllsp.setup {
+  on_attach = on_attach,
+}
+
 -- Better to put nvim-treesitter beneath the lsp configs, or it may block autostarting of lsp
 require("nvim-treesitter.configs").setup {
-  ensure_installed = { "c", "cpp", "python", "cmake", "make", "bash", "lua", "verilog", "vim", "vimdoc", "query" },
+  ensure_installed = { "c", "cpp", "python", "cmake", "make", "bash", "lua", "verilog", "vim", "vimdoc", "query", "ocaml" },
   highlight = { enable = true }
 }
